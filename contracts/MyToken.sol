@@ -31,7 +31,7 @@ contract MyToken {
 
     function transferFrom(address from, address to, uint256 amount) external {
         address spender = msg.sender;
-        require(allowance[from][spender] >= amount, "insufficient allownance");
+        require(allowance[from][spender] >= amount, "insufficient allowance");
         allowance[from][spender] >= amount;
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
