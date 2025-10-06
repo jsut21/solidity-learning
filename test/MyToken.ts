@@ -77,4 +77,55 @@ describe("My Token", () => {
       ).to.be.revertedWith("insufficient balance");
     });
   });
+
+  describe("TransferFrom", () => {
+    it("should emit Approval event", async () => {
+      const signer1 = signers[1];
+      await expect(
+        myTokenC.approve(signer1.address, hre.ethers.parseUnits("10", decimals))
+      )
+        .to.emit(myTokenC, "Approval")
+        .withArgs(signer1.address, hre.ethers.parseUnits("10", decimals));
+    });
+    it("should be reverted with insufficient allowance error", async () => {
+      const signer0 = signers[0];
+      const signer1 = signers[1];
+      await expect(
+        myTokenC
+          .connect(signer1)
+          .transferFrom(
+            signer0.address,
+            signer1.address,
+            hre.ethers.parseUnits("1", decimals)
+          )
+      ).to.be.revertedWith("insufficient allowance");
+    });
+    it("should transferFrom properly after approve", async () => {
+      // [Testcase 작성]
+      // - 내용
+      // 1. approve: signer1에게 signer0의 자산 이동권한 부여
+      // 2. transferFrom: signer1이 signer0의 MT토큰을 자신의 주소(signer1)에게 전송
+      // 3. balance 확인
+      const signer0 = signers[0];
+      const signer1 = signers[1];
+
+      await myTokenC
+        .connect(signer0)
+        .approve(signer1.address, hre.ethers.parseUnits("1", decimals));
+      await myTokenC
+        .connect(signer1)
+        .transferFrom(
+          signer0.address,
+          signer1.address,
+          hre.ethers.parseUnits("1", decimals)
+        );
+
+      let transferAmount = hre.ethers.parseUnits("1", decimals);
+
+      expect(await myTokenC.balanceOf(signer0.address)).equal(
+        mintingAmount * 10n ** decimals - transferAmount
+      );
+      expect(await myTokenC.balanceOf(signer1.address)).equal(transferAmount);
+    });
+  });
 });
