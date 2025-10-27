@@ -40,6 +40,24 @@ describe("My Token", () => {
         MINTING_AMOUNT * 10n ** DECIMALS
       );
     });
+
+    // signer0이 mint하는 테스트케이스
+    it("should mint 1MT for signer 0", async () => {
+      const signer0 = signers[0];
+      const mintingAmount = hre.ethers.parseUnits("1", DECIMALS);
+      await myTokenC.connect(signer0).mint(mintingAmount, signer0.address);
+      expect(await myTokenC.balanceOf(signer0.address)).equal(
+        MINTING_AMOUNT * 10n ** DECIMALS + mintingAmount
+      );
+    });
+
+    it("should return or revert when minting infinitly", async () => {
+      const hacker = signers[2];
+      const mintingAgainAmount = hre.ethers.parseUnits("10000", DECIMALS);
+      await expect(
+        myTokenC.connect(hacker).mint(mintingAgainAmount, hacker.address)
+      ).to.be.revertedWith("You are not authorized to manage this token");
+    });
   });
 
   describe("Transfer", () => {
