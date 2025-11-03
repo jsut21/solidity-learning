@@ -24,11 +24,11 @@ describe("NativeBank", () => {
     const txResp = await staker.sendTransaction(tx);
     const txReceipt = await txResp.wait();
 
-    console.log(
-      await hre.ethers.provider.getBalance(await nativeBankC.getAddress())
-    );
+    // console.log(
+    //   await hre.ethers.provider.getBalance(await nativeBankC.getAddress())
+    // );
 
-    console.log(await nativeBankC.balanceOf(staker.address));
+    // console.log(await nativeBankC.balanceOf(staker.address));
   });
 
   it("Should withdraw all the token", async () => {
