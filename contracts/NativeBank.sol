@@ -3,8 +3,16 @@ pragma solidity ^0.8.28;
 
 contract NativeBank {
     mapping(address => uint256) public balanceOf;
+    bool lock;
 
-    function withdraw() external {
+    modifier noReentrant() {
+        require(!lock, "is working on");
+        lock = true;
+        _;
+        lock = false;
+    }
+
+    function withdraw() external noReentrant {
         uint256 balance = balanceOf[msg.sender];
         require(balance > 0, "insufficient balance");
 
